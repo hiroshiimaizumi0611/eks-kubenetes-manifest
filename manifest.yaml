@@ -37,4 +37,4 @@ spec:
   ports:
     - port: 80 # Serviceが受け取るポート
       targetPort: 80 # Podがリッスンしているポート
-  type: ClusterIP # 内部ネットワーク専用のService（外部非公開）
+  type: LoadBalancer
