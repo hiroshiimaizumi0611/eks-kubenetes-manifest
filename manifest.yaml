@@ -1,0 +1,40 @@
+# Deployment リソース：Podを複数管理するためのKubernetesリソース
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment # Deploymentの名前
+  labels:
+    app: nginx # ラベル（Podの選別などに使う）
+
+spec:
+  replicas: 2 # 起動するPodの数（今回は2つ）
+  selector:
+    matchLabels:
+      app: nginx # このラベルがついたPodを管理対象にする
+
+  template: # Podのテンプレート
+    metadata:
+      labels:
+        app: nginx # Podに付与されるラベル
+    spec:
+      containers: # Pod内で動かすコンテナの定義（複数可）
+        - name: nginx # コンテナの名前
+          image: nginx:1.25.3 # 使用するDockerイメージ（ここでは公式nginx）
+          ports:
+            - containerPort: 80 # コンテナ内部で開くポート番号（Webサーバ）
+
+---
+
+# Service リソース：Podにアクセスするためのエントリーポイント
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service # Serviceの名前
+
+spec:
+  selector:
+    app: nginx # このラベルを持つPodにトラフィックを送る
+  ports:
+    - port: 80 # Serviceが受け取るポート
+      targetPort: 80 # Podがリッスンしているポート
+  type: ClusterIP # 内部ネットワーク専用のService（外部非公開）
